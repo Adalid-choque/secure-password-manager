@@ -53,3 +53,31 @@ python run_cli.py
 ## Estado del Proyecto
 
 🚀 **Fase 5 completada** - Interfaz de consola implementada
+
+## Funcionalidades
+
+### ✅ Implementadas
+- **CRUD de contraseñas**: Crear, listar, eliminar contraseñas
+- **Cifrado AES-256**: Todas las contraseñas están cifradas
+- **Interfaz web**: Bootstrap con autenticación
+- **Interfaz de consola**: Menú interactivo desde terminal
+- **Autenticación**: Sistema de usuarios de Django
+- **Validación de fortaleza**: Criterios de seguridad para contraseñas
+- **Rate limiting**: Protección contra ataques de fuerza bruta
+
+### 🔐 Seguridad Avanzada
+- **Derivación PBKDF2**: 100,000 iteraciones con salt único
+- **Validación de entrada**: Protección contra SQL injection y XSS
+- **Fortaleza de contraseñas**: 7 criterios de validación
+- **Rate limiting**: Límites por IP y usuario
+- **Cifrado mejorado**: AES-256-CBC con derivación segura de claves
+- **Auto-ocultado**: Contraseñas se ocultan automáticamente por seguridad
+
+### 🧪 Pruebas
+```bash
+python test_security.py
+```
+
+## Estado del Proyecto
+
+🚀 **Fase 6 completada** - Mejoras de seguridad implementadas
