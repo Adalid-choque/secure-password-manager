@@ -16,8 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.shortcuts import redirect
+
+def home_redirect(request):
+    return redirect('list_passwords')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('passwords/', include('passwords.urls')),
+    path('', home_redirect, name='home'),
 ]

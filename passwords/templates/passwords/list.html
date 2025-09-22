@@ -1,0 +1,67 @@
+{% extends 'passwords/base.html' %}
+
+{% block title %}Lista de Contraseñas - Gestor de Contraseñas{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Mis Contraseñas</h2>
+    <a href="{% url 'add_password' %}" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Agregar Contraseña
+    </a>
+</div>
+
+{% if passwords %}
+    <div class="row">
+        {% for password in passwords %}
+            <div class="col-md-6 col-lg-4 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ password.website }}</h5>
+                        <p class="card-text">
+                            <strong>Usuario:</strong> {{ password.username }}<br>
+                            <strong>Contraseña:</strong> ••••••••
+                        </p>
+                        <small class="text-muted">
+                            Creado: {{ password.created_at|date:"d/m/Y H:i" }}
+                        </small>
+                        <div class="mt-2">
+                            <button class="btn btn-sm btn-outline-secondary" onclick="togglePassword({{ password.id }})">
+                                Ver
+                            </button>
+                            <a href="{% url 'delete_password' password.id %}" 
+                               class="btn btn-sm btn-outline-danger"
+                               onclick="return confirm('¿Estás seguro de eliminar esta contraseña?')">
+                                Eliminar
+                            </a>
+                        </div>
+                        <div id="password-{{ password.id }}" class="mt-2" style="display: none;">
+                            <strong>Contraseña:</strong> <code>{{ password.encrypted_password }}</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="text-center py-5">
+        <h4 class="text-muted">No tienes contraseñas guardadas</h4>
+        <p class="text-muted">Comienza agregando tu primera contraseña</p>
+        <a href="{% url 'add_password' %}" class="btn btn-primary">Agregar Primera Contraseña</a>
+    </div>
+{% endif %}
+
+<script>
+function togglePassword(passwordId) {
+    const element = document.getElementById('password-' + passwordId);
+    const button = event.target;
+    
+    if (element.style.display === 'none') {
+        element.style.display = 'block';
+        button.textContent = 'Ocultar';
+    } else {
+        element.style.display = 'none';
+        button.textContent = 'Ver';
+    }
+}
+</script>
+{% endblock %}
