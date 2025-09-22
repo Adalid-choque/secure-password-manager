@@ -1,20 +1,26 @@
 {% extends 'passwords/base.html' %}
 
-{% block title %}Agregar Contraseña - Gestor de Contraseñas{% endblock %}
+{% block title %}Agregar Contraseña Segura - Gestor de Contraseñas{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-6">
+    <div class="col-md-8">
         <div class="card">
             <div class="card-header">
-                <h4 class="mb-0">🔐 Agregar Nueva Contraseña</h4>
+                <h4 class="mb-0">🔐 Agregar Nueva Contraseña (Modo Seguro)</h4>
             </div>
             <div class="card-body">
                 <div class="alert alert-info">
-                    <strong>🔒 Seguridad:</strong> Tu contraseña será cifrada con AES-256 antes de guardarse.
+                    <strong>🛡️ Seguridad Mejorada:</strong> 
+                    <ul class="mb-0 mt-2">
+                        <li>Derivación de clave PBKDF2 con 100,000 iteraciones</li>
+                        <li>Validación de fortaleza de contraseña</li>
+                        <li>Protección contra inyección SQL y XSS</li>
+                        <li>Rate limiting para prevenir ataques</li>
+                    </ul>
                 </div>
                 
-                <form method="post">
+                <form method="post" id="passwordForm">
                     {% csrf_token %}
                     
                     <div class="mb-3">
@@ -23,6 +29,7 @@
                         {% if form.website.errors %}
                             <div class="text-danger">{{ form.website.errors }}</div>
                         {% endif %}
+                        <div class="form-text">Ejemplo: gmail.com, facebook.com</div>
                     </div>
 
                     <div class="mb-3">
@@ -31,6 +38,7 @@
                         {% if form.username.errors %}
                             <div class="text-danger">{{ form.username.errors }}</div>
                         {% endif %}
+                        <div class="form-text">Tu nombre de usuario o email</div>
                     </div>
 
                     <div class="mb-3">
@@ -39,13 +47,50 @@
                         {% if form.password.errors %}
                             <div class="text-danger">{{ form.password.errors }}</div>
                         {% endif %}
+                        
+                        <!-- Indicador de fortaleza en tiempo real -->
+                        <div id="strengthIndicator" class="mt-2" style="display: none;">
+                            <div class="progress" style="height: 8px;">
+                                <div id="strengthBar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                            </div>
+                            <small id="strengthText" class="text-muted"></small>
+                            <div id="strengthErrors" class="text-warning small mt-1"></div>
+                        </div>
+                        
                         <div class="form-text">
-                            🔐 La contraseña será cifrada automáticamente con AES-256-CBC
+                            <strong>Criterios de seguridad:</strong>
+                            <ul class="small mb-0 mt-1">
+                                <li>Mínimo 8 caracteres (recomendado 12+)</li>
+                                <li>Al menos una mayúscula y una minúscula</li>
+                                <li>Al menos un número</li>
+                                <li>Al menos un símbolo especial</li>
+                                <li>Sin patrones comunes (123, abc, password)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.confirm_password.id_for_label }}" class="form-label">{{ form.confirm_password.label }}</label>
+                        {{ form.confirm_password }}
+                        {% if form.confirm_password.errors %}
+                            <div class="text-danger">{{ form.confirm_password.errors }}</div>
+                        {% endif %}
+                        <div id="matchIndicator" class="form-text"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-check">
+                            {{ form.validate_strength }}
+                            <label class="form-check-label" for="{{ form.validate_strength.id_for_label }}">
+                                {{ form.validate_strength.label }}
+                            </label>
+                            <div class="form-text">{{ form.validate_strength.help_text }}</div>
                         </div>
                     </div>
 
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                         <a href="{% url 'list_passwords' %}" class="btn btn-secondary me-md-2">Cancelar</a>
+                        <a href="{% url 'add_password_simple' %}" class="btn btn-outline-primary me-md-2">Modo Simple</a>
                         <button type="submit" class="btn btn-primary">🔒 Guardar Cifrada</button>
                     </div>
                 </form>
@@ -53,4 +98,91 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const passwordField = document.getElementById('{{ form.password.id_for_label }}');
+    const confirmField = document.getElementById('{{ form.confirm_password.id_for_label }}');
+    const strengthIndicator = document.getElementById('strengthIndicator');
+    const strengthBar = document.getElementById('strengthBar');
+    const strengthText = document.getElementById('strengthText');
+    const strengthErrors = document.getElementById('strengthErrors');
+    const matchIndicator = document.getElementById('matchIndicator');
+    
+    // Verificar fortaleza en tiempo real
+    passwordField.addEventListener('input', function() {
+        const password = this.value;
+        
+        if (password.length === 0) {
+            strengthIndicator.style.display = 'none';
+            return;
+        }
+        
+        strengthIndicator.style.display = 'block';
+        
+        // Llamar API para verificar fortaleza
+        fetch('{% url "check_password_strength" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({password: password})
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Actualizar barra de progreso
+            strengthBar.style.width = data.percentage + '%';
+            strengthText.textContent = `Fortaleza: ${data.strength_level} (${data.score}/${data.max_score})`;
+            
+            // Colores según fortaleza
+            strengthBar.className = 'progress-bar';
+            if (data.percentage < 30) {
+                strengthBar.classList.add('bg-danger');
+            } else if (data.percentage < 60) {
+                strengthBar.classList.add('bg-warning');
+            } else if (data.percentage < 80) {
+                strengthBar.classList.add('bg-info');
+            } else {
+                strengthBar.classList.add('bg-success');
+            }
+            
+            // Mostrar errores
+            if (data.errors && data.errors.length > 0) {
+                strengthErrors.innerHTML = '⚠️ ' + data.errors.join(', ');
+            } else {
+                strengthErrors.innerHTML = '✅ Contraseña cumple criterios de seguridad';
+                strengthErrors.className = 'text-success small mt-1';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+        
+        // Verificar coincidencia
+        checkPasswordMatch();
+    });
+    
+    // Verificar coincidencia de contraseñas
+    confirmField.addEventListener('input', checkPasswordMatch);
+    
+    function checkPasswordMatch() {
+        const password = passwordField.value;
+        const confirm = confirmField.value;
+        
+        if (confirm.length === 0) {
+            matchIndicator.textContent = '';
+            return;
+        }
+        
+        if (password === confirm) {
+            matchIndicator.innerHTML = '✅ Las contraseñas coinciden';
+            matchIndicator.className = 'form-text text-success';
+        } else {
+            matchIndicator.innerHTML = '❌ Las contraseñas no coinciden';
+            matchIndicator.className = 'form-text text-danger';
+        }
+    }
+});
+</script>
 {% endblock %}

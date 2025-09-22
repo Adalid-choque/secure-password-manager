@@ -5,14 +5,25 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>Mis Contraseñas 🔐</h2>
-    <a href="{% url 'add_password' %}" class="btn btn-primary">
-        <i class="bi bi-plus-circle"></i> Agregar Contraseña
-    </a>
+    <div>
+        <a href="{% url 'add_password' %}" class="btn btn-primary me-2">
+            🛡️ Agregar Segura
+        </a>
+        <a href="{% url 'add_password_simple' %}" class="btn btn-outline-primary">
+            ➕ Agregar Simple
+        </a>
+    </div>
 </div>
 
 {% if passwords %}
-    <div class="alert alert-info">
-        <strong>🔒 Cifrado AES-256:</strong> Todas las contraseñas están cifradas con AES-256-CBC para máxima seguridad.
+    <div class="alert alert-success">
+        <strong>🔒 Seguridad Mejorada:</strong> 
+        <ul class="mb-0 mt-2">
+            <li><strong>Cifrado AES-256-CBC</strong> con derivación PBKDF2</li>
+            <li><strong>100,000 iteraciones</strong> para resistir ataques de fuerza bruta</li>
+            <li><strong>Salt único</strong> por usuario para mayor seguridad</li>
+            <li><strong>Validaciones</strong> contra SQL injection y XSS</li>
+        </ul>
     </div>
     
     <div class="row">
@@ -32,16 +43,26 @@
                             <button class="btn btn-sm btn-outline-secondary" onclick="togglePassword({{ password.id }})">
                                 🔓 Ver
                             </button>
-                            <a href="{% url 'delete_password' password.id %}" 
-                               class="btn btn-sm btn-outline-danger"
-                               onclick="return confirm('¿Estás seguro de eliminar esta contraseña?')">
-                                🗑️ Eliminar
-                            </a>
+                            
+                            <!-- Formulario para eliminación segura con POST -->
+                            <form method="post" action="{% url 'delete_password' password.id %}" 
+                                  style="display: inline;" 
+                                  onsubmit="return confirm('⚠️ ¿Estás seguro de eliminar la contraseña de {{ password.website }}?\n\nEsta acción no se puede deshacer.')">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    🗑️ Eliminar
+                                </button>
+                            </form>
                         </div>
                         <div id="password-{{ password.id }}" class="mt-2" style="display: none;">
                             <div class="alert alert-warning">
                                 <strong>🔓 Contraseña descifrada:</strong> 
-                                <code>{{ password.decrypted_password }}</code>
+                                <div class="mt-2">
+                                    <code style="font-size: 1.1em; background: #f8f9fa; padding: 5px; border-radius: 3px;">{{ password.decrypted_password }}</code>
+                                </div>
+                                <small class="text-muted d-block mt-2">
+                                    ⚠️ Mantén esta información segura y cierra cuando termines
+                                </small>
                             </div>
                         </div>
                     </div>
@@ -49,11 +70,50 @@
             </div>
         {% endfor %}
     </div>
+    
+    <!-- Estadísticas de seguridad -->
+    <div class="mt-4">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-title">📊 Estadísticas de Seguridad</h6>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h4 class="text-primary">{{ passwords|length }}</h4>
+                            <small class="text-muted">Contraseñas Cifradas</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h4 class="text-success">AES-256</h4>
+                            <small class="text-muted">Algoritmo de Cifrado</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h4 class="text-info">PBKDF2</h4>
+                            <small class="text-muted">Derivación de Clave</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h4 class="text-warning">100K</h4>
+                            <small class="text-muted">Iteraciones</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
 {% else %}
     <div class="text-center py-5">
         <h4 class="text-muted">No tienes contraseñas guardadas</h4>
-        <p class="text-muted">Comienza agregando tu primera contraseña cifrada</p>
-        <a href="{% url 'add_password' %}" class="btn btn-primary">🔐 Agregar Primera Contraseña</a>
+        <p class="text-muted">Comienza agregando tu primera contraseña con cifrado mejorado</p>
+        <div>
+            <a href="{% url 'add_password' %}" class="btn btn-primary me-2">🛡️ Agregar Contraseña Segura</a>
+            <a href="{% url 'add_password_simple' %}" class="btn btn-outline-primary">➕ Modo Simple</a>
+        </div>
     </div>
 {% endif %}
 
@@ -65,10 +125,43 @@ function togglePassword(passwordId) {
     if (element.style.display === 'none') {
         element.style.display = 'block';
         button.innerHTML = '🔒 Ocultar';
+        button.classList.remove('btn-outline-secondary');
+        button.classList.add('btn-warning');
+        
+        // Auto-ocultar después de 30 segundos por seguridad
+        setTimeout(() => {
+            if (element.style.display === 'block') {
+                element.style.display = 'none';
+                button.innerHTML = '🔓 Ver';
+                button.classList.remove('btn-warning');
+                button.classList.add('btn-outline-secondary');
+            }
+        }, 30000);
+        
     } else {
         element.style.display = 'none';
         button.innerHTML = '🔓 Ver';
+        button.classList.remove('btn-warning');
+        button.classList.add('btn-outline-secondary');
     }
 }
+
+// Ocultar todas las contraseñas al cambiar de pestaña/ventana
+document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+        const passwordElements = document.querySelectorAll('[id^="password-"]');
+        const buttons = document.querySelectorAll('button[onclick^="togglePassword"]');
+        
+        passwordElements.forEach(element => {
+            element.style.display = 'none';
+        });
+        
+        buttons.forEach(button => {
+            button.innerHTML = '🔓 Ver';
+            button.classList.remove('btn-warning');
+            button.classList.add('btn-outline-secondary');
+        });
+    }
+});
 </script>
 {% endblock %}
