@@ -24,20 +24,30 @@ def list_passwords(request):
     Vista para listar todas las contraseñas del usuario actual.
     - Filtra solo las contraseñas del usuario logueado
     - Las ordena por fecha de creación (más recientes primero)
-    - Descifra las contraseñas para mostrarlas con el sistema mejorado
+    - Descifra las contraseñas usando ambos sistemas para compatibilidad
     """
     passwords = PasswordEntry.objects.filter(user=request.user).order_by('-created_at')
     
-    # Usar cifrado mejorado con contexto de usuario
-    secure_crypto = SecurePasswordCrypto(user=request.user)
-    
     # Descifrar contraseñas para mostrar en la vista
     for password in passwords:
-        decrypt_result = secure_crypto.decrypt_password(password.encrypted_password)
-        if decrypt_result['success']:
-            password.decrypted_password = decrypt_result['decrypted_password']
-        else:
-            password.decrypted_password = f"Error: {decrypt_result['error']}"
+        # Intentar primero con el sistema original (para compatibilidad)
+        try:
+            decrypted = crypto.decrypt_password(password.encrypted_password)
+            if not decrypted.startswith("Error"):
+                password.decrypted_password = decrypted
+            else:
+                raise Exception("Sistema original falló")
+        except:
+            # Si falla, intentar con el sistema mejorado
+            try:
+                secure_crypto = SecurePasswordCrypto(user=request.user)
+                decrypt_result = secure_crypto.decrypt_password(password.encrypted_password)
+                if decrypt_result['success']:
+                    password.decrypted_password = decrypt_result['decrypted_password']
+                else:
+                    password.decrypted_password = f"Error: {decrypt_result['error']}"
+            except:
+                password.decrypted_password = "Error: No se pudo descifrar"
     
     return render(request, 'passwords/list.html', {'passwords': passwords})
 
