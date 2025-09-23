@@ -2,7 +2,7 @@
 
 ## Descripción General del Proyecto
 
-Sistema gestor de contraseñas desarrollado con Django que permite crear, guardar, listar y eliminar contraseñas de forma segura. Implementa cifrado AES-256 para proteger las contraseñas almacenadas y proporciona tanto interfaz web como interfaz de consola.
+Sistema gestor de contraseñas desarrollado con Django que permite crear, guardar, listar y eliminar contraseñas de forma segura. Implementa cifrado AES-256 para proteger las contraseñas almacenadas con una interfaz web intuitiva.
 
 ## Dependencias
 
@@ -38,20 +38,16 @@ python manage.py createsuperuser
 
 ### Ejecución
 
-#### Interfaz Web
 ```bash
 python manage.py runserver
 ```
 Acceder a: `http://127.0.0.1:8000/`
 
-#### Interfaz de Consola
-```bash
-python manage.py password_manager_cli
-```
-
 ### Funcionalidades
 
-- **Crear contraseñas**: Formulario web y menú CLI
+- **Crear contraseñas**: Formulario web con validaciones de seguridad
 - **Guardar contraseñas**: Almacenamiento cifrado en base de datos
 - **Listar contraseñas**: Vista de todas las contraseñas del usuario
 - **Eliminar contraseñas**: Eliminación con confirmación
+- **Cifrado AES-256**: Protección robusta de datos sensibles
+- **Autenticación**: Sistema de usuarios integrado con Django
