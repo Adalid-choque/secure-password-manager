@@ -4,20 +4,20 @@
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Mis Contraseñas 🔐</h2>
+    <h2>Mis Contraseñas </h2>
     <div>
         <a href="{% url 'add_password' %}" class="btn btn-primary me-2">
-            🛡️ Agregar Segura
+            Agregar Segura
         </a>
         <a href="{% url 'add_password_simple' %}" class="btn btn-outline-primary">
-            ➕ Agregar Simple
+            Agregar Simple
         </a>
     </div>
 </div>
 
 {% if passwords %}
     <div class="alert alert-success">
-        <strong>🔒 Seguridad Mejorada:</strong> 
+        <strong> Seguridad Mejorada:</strong> 
         <ul class="mb-0 mt-2">
             <li><strong>Cifrado AES-256-CBC</strong> con derivación PBKDF2</li>
             <li><strong>100,000 iteraciones</strong> para resistir ataques de fuerza bruta</li>
@@ -25,7 +25,7 @@
             <li><strong>Validaciones</strong> contra SQL injection y XSS</li>
         </ul>
     </div>
-    
+
     <div class="row">
         {% for password in passwords %}
             <div class="col-md-6 col-lg-4 mb-3">
@@ -41,27 +41,27 @@
                         </small>
                         <div class="mt-2">
                             <button class="btn btn-sm btn-outline-secondary" onclick="togglePassword({{ password.id }})">
-                                🔓 Ver
+                                Ver
                             </button>
-                            
+
                             <!-- Formulario para eliminación segura con POST -->
                             <form method="post" action="{% url 'delete_password' password.id %}" 
                                   style="display: inline;" 
-                                  onsubmit="return confirm('⚠️ ¿Estás seguro de eliminar la contraseña de {{ password.website }}?\n\nEsta acción no se puede deshacer.')">
+                                  onsubmit="return confirm(' ¿Estás seguro de eliminar la contraseña de {{ password.website }}?\n\nEsta acción no se puede deshacer.')">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-sm btn-outline-danger">
-                                    🗑️ Eliminar
+                                    Eliminar
                                 </button>
                             </form>
                         </div>
                         <div id="password-{{ password.id }}" class="mt-2" style="display: none;">
                             <div class="alert alert-warning">
-                                <strong>🔓 Contraseña descifrada:</strong> 
+                                <strong> Contraseña descifrada:</strong> 
                                 <div class="mt-2">
                                     <code style="font-size: 1.1em; background: #f8f9fa; padding: 5px; border-radius: 3px;">{{ password.decrypted_password }}</code>
                                 </div>
                                 <small class="text-muted d-block mt-2">
-                                    ⚠️ Mantén esta información segura y cierra cuando termines
+                                     Mantén esta información segura y cierra cuando termines
                                 </small>
                             </div>
                         </div>
@@ -70,12 +70,12 @@
             </div>
         {% endfor %}
     </div>
-    
+
     <!-- Estadísticas de seguridad -->
     <div class="mt-4">
         <div class="card">
             <div class="card-body">
-                <h6 class="card-title">📊 Estadísticas de Seguridad</h6>
+                <h6 class="card-title">Estadísticas de Seguridad</h6>
                 <div class="row">
                     <div class="col-md-3">
                         <div class="text-center">
@@ -111,8 +111,8 @@
         <h4 class="text-muted">No tienes contraseñas guardadas</h4>
         <p class="text-muted">Comienza agregando tu primera contraseña con cifrado mejorado</p>
         <div>
-            <a href="{% url 'add_password' %}" class="btn btn-primary me-2">🛡️ Agregar Contraseña Segura</a>
-            <a href="{% url 'add_password_simple' %}" class="btn btn-outline-primary">➕ Modo Simple</a>
+            <a href="{% url 'add_password' %}" class="btn btn-primary me-2"> Agregar Contraseña Segura</a>
+            <a href="{% url 'add_password_simple' %}" class="btn btn-outline-primary"> Modo Simple</a>
         </div>
     </div>
 {% endif %}
@@ -124,7 +124,7 @@ function togglePassword(passwordId) {
     
     if (element.style.display === 'none') {
         element.style.display = 'block';
-        button.innerHTML = '🔒 Ocultar';
+        button.innerHTML = ' Ocultar';
         button.classList.remove('btn-outline-secondary');
         button.classList.add('btn-warning');
         
@@ -132,7 +132,7 @@ function togglePassword(passwordId) {
         setTimeout(() => {
             if (element.style.display === 'block') {
                 element.style.display = 'none';
-                button.innerHTML = '🔓 Ver';
+                button.innerHTML = ' Ver';
                 button.classList.remove('btn-warning');
                 button.classList.add('btn-outline-secondary');
             }
@@ -140,7 +140,7 @@ function togglePassword(passwordId) {
         
     } else {
         element.style.display = 'none';
-        button.innerHTML = '🔓 Ver';
+        button.innerHTML = ' Ver';
         button.classList.remove('btn-warning');
         button.classList.add('btn-outline-secondary');
     }
@@ -157,7 +157,7 @@ document.addEventListener('visibilitychange', function() {
         });
         
         buttons.forEach(button => {
-            button.innerHTML = '🔓 Ver';
+            button.innerHTML = ' Ver';
             button.classList.remove('btn-warning');
             button.classList.add('btn-outline-secondary');
         });
