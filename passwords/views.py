@@ -3,6 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.forms import AuthenticationForm
 from .models import PasswordEntry
 from .forms import PasswordEntryForm, SecurePasswordEntryForm
 from .crypto import crypto, SecurePasswordCrypto
@@ -200,3 +202,24 @@ def check_password_strength(request):
             return JsonResponse({'error': str(e)}, status=400)
     
     return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+def custom_login(request):
+    """
+    Vista personalizada de login que no usa el template base.
+    """
+    if request.user.is_authenticated:
+        return redirect('list_passwords')
+    
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('list_passwords')
+    else:
+        form = AuthenticationForm()
+    
+    return render(request, 'passwords/login.html', {'form': form})
