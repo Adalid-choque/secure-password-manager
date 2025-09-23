@@ -1,0 +1,32 @@
+{% extends 'passwords/base.html' %}
+
+{% block title %}Iniciar Sesión - Gestor de Contraseñas{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-center">Gestor de Contraseñas</h3>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Usuario:</label>
+                        {{ form.username }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Contraseña:</label>
+                        {{ form.password }}
+                    </div>
+                    {% if form.errors %}
+                        <div class="alert alert-danger">{{ form.errors }}</div>
+                    {% endif %}
+                    <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

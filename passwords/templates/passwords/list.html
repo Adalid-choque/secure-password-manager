@@ -45,8 +45,8 @@
                             </button>
 
                             <!-- Formulario para eliminación segura con POST -->
-                            <form method="post" action="{% url 'delete_password' password.id %}" 
-                                  style="display: inline;" 
+                            <form method="post" action="{% url 'delete_password' password.id %}"
+                                  style="display: inline;"
                                   onsubmit="return confirm(' ¿Estás seguro de eliminar la contraseña de {{ password.website }}?\n\nEsta acción no se puede deshacer.')">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-sm btn-outline-danger">
@@ -56,7 +56,7 @@
                         </div>
                         <div id="password-{{ password.id }}" class="mt-2" style="display: none;">
                             <div class="alert alert-warning">
-                                <strong> Contraseña descifrada:</strong> 
+                                <strong> Contraseña descifrada:</strong>
                                 <div class="mt-2">
                                     <code style="font-size: 1.1em; background: #f8f9fa; padding: 5px; border-radius: 3px;">{{ password.decrypted_password }}</code>
                                 </div>
@@ -105,7 +105,7 @@
             </div>
         </div>
     </div>
-    
+
 {% else %}
     <div class="text-center py-5">
         <h4 class="text-muted">No tienes contraseñas guardadas</h4>
@@ -121,13 +121,13 @@
 function togglePassword(passwordId) {
     const element = document.getElementById('password-' + passwordId);
     const button = event.target;
-    
+
     if (element.style.display === 'none') {
         element.style.display = 'block';
         button.innerHTML = ' Ocultar';
         button.classList.remove('btn-outline-secondary');
         button.classList.add('btn-warning');
-        
+
         // Auto-ocultar después de 30 segundos por seguridad
         setTimeout(() => {
             if (element.style.display === 'block') {
@@ -137,7 +137,7 @@ function togglePassword(passwordId) {
                 button.classList.add('btn-outline-secondary');
             }
         }, 30000);
-        
+
     } else {
         element.style.display = 'none';
         button.innerHTML = ' Ver';
@@ -151,11 +151,11 @@ document.addEventListener('visibilitychange', function() {
     if (document.hidden) {
         const passwordElements = document.querySelectorAll('[id^="password-"]');
         const buttons = document.querySelectorAll('button[onclick^="togglePassword"]');
-        
+
         passwordElements.forEach(element => {
             element.style.display = 'none';
         });
-        
+
         buttons.forEach(button => {
             button.innerHTML = ' Ver';
             button.classList.remove('btn-warning');
