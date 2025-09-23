@@ -1,83 +1,57 @@
 # Secure Password Manager
 
-Un gestor de contraseñas seguro desarrollado con Django y SQLite.
+## Descripción General del Proyecto
 
-## Descripción
+Sistema gestor de contraseñas desarrollado con Django que permite crear, guardar, listar y eliminar contraseñas de forma segura. Implementa cifrado AES-256 para proteger las contraseñas almacenadas y proporciona tanto interfaz web como interfaz de consola.
 
-Este proyecto implementa un sistema de gestión de contraseñas con cifrado seguro, desarrollado como parte del curso de Fundamentos de Ciberseguridad.
+## Dependencias
 
-## Tecnologías
-
-- Python 3.x
+- Python 3.8+
 - Django 4.2.7
-- SQLite
-- Cryptography
+- cryptography
+- SQLite (incluida con Python)
 
-## Instalación
+## Cómo Ejecutar la Aplicación
 
-1. Clonar el repositorio
-2. Instalar dependencias: `pip install -r requirements.txt`
-3. Ejecutar migraciones: `python manage.py migrate`
-4. Crear superusuario: `python manage.py createsuperuser`
+### Instalación
 
-## Uso
+1. Clonar el repositorio:
+```bash
+git clone [URL_DEL_REPOSITORIO]
+cd secure-password-manager
+```
 
-### 🌐 Interfaz Web
+2. Instalar dependencias:
+```bash
+pip install -r requirements.txt
+```
+
+3. Configurar base de datos:
+```bash
+python manage.py migrate
+```
+
+4. Crear usuario administrador:
+```bash
+python manage.py createsuperuser
+```
+
+### Ejecución
+
+#### Interfaz Web
 ```bash
 python manage.py runserver
 ```
 Acceder a: `http://127.0.0.1:8000/`
 
-### 🖥️ Interfaz de Consola
+#### Interfaz de Consola
 ```bash
 python manage.py password_manager_cli
-# o
-python run_cli.py
 ```
 
-## Funcionalidades
+### Funcionalidades
 
-### ✅ Implementadas
-- **CRUD de contraseñas**: Crear, listar, eliminar contraseñas
-- **Cifrado AES-256**: Todas las contraseñas están cifradas
-- **Interfaz web**: Bootstrap con autenticación
-- **Interfaz de consola**: Menú interactivo desde terminal
-- **Autenticación**: Sistema de usuarios de Django
-
-### 🔐 Seguridad
-- Cifrado simétrico AES-256-CBC
-- Vector de inicialización único por contraseña
-- Padding PKCS7 estándar
-- Codificación Base64 para almacenamiento
-
-## Estado del Proyecto
-
-🚀 **Fase 5 completada** - Interfaz de consola implementada
-
-## Funcionalidades
-
-### ✅ Implementadas
-- **CRUD de contraseñas**: Crear, listar, eliminar contraseñas
-- **Cifrado AES-256**: Todas las contraseñas están cifradas
-- **Interfaz web**: Bootstrap con autenticación
-- **Interfaz de consola**: Menú interactivo desde terminal
-- **Autenticación**: Sistema de usuarios de Django
-- **Validación de fortaleza**: Criterios de seguridad para contraseñas
-- **Rate limiting**: Protección contra ataques de fuerza bruta
-
-### 🔐 Seguridad Avanzada
-- **Derivación PBKDF2**: 100,000 iteraciones con salt único
-- **Validación de entrada**: Protección contra SQL injection y XSS
-- **Fortaleza de contraseñas**: 7 criterios de validación
-- **Rate limiting**: Límites por IP y usuario
-- **Cifrado mejorado**: AES-256-CBC con derivación segura de claves
-- **Auto-ocultado**: Contraseñas se ocultan automáticamente por seguridad
-
-### 🧪 Pruebas
-```bash
-python test_security.py
-```
-
-## Estado del Proyecto
-
-🚀 **Fase 6 completada** - Mejoras de seguridad implementadas
+- **Crear contraseñas**: Formulario web y menú CLI
+- **Guardar contraseñas**: Almacenamiento cifrado en base de datos
+- **Listar contraseñas**: Vista de todas las contraseñas del usuario
+- **Eliminar contraseñas**: Eliminación con confirmación
