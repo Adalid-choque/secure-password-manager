@@ -53,6 +53,9 @@
             <div class="navbar-nav ms-auto">
                 {% if user.is_authenticated %}
                     <span class="navbar-text me-3">Hola, {{ user.username }}</span>
+                    <a class="nav-link" href="{% url 'change_password' %}">
+                        <i class="fas fa-key me-1"></i>Cambiar Contraseña
+                    </a>
                     <a class="nav-link" href="{% url 'logout' %}">
                         <i class="fas fa-sign-out-alt me-1"></i>Cerrar Sesión
                     </a>
