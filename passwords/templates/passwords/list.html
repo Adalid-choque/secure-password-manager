@@ -4,20 +4,20 @@
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Mis Contraseñas 🔐</h2>
+    <h2 style="color: #2c3e50; font-weight: 600;">Mis Contraseñas</h2>
     <div>
-        <a href="{% url 'add_password' %}" class="btn btn-primary me-2">
-            🛡️ Agregar Segura
+        <a href="{% url 'add_password' %}" class="btn me-2" style="background: linear-gradient(135deg, #4f46e5, #06b6d4); border: none; border-radius: 12px; color: white; font-weight: 500; padding: 0.75rem 1.5rem;">
+            <i class="fas fa-plus me-1"></i>Agregar Segura
         </a>
-        <a href="{% url 'add_password_simple' %}" class="btn btn-outline-primary">
-            ➕ Agregar Simple
+        <a href="{% url 'add_password_simple' %}" class="btn" style="border: 2px solid #4f46e5; border-radius: 12px; color: #4f46e5; font-weight: 500; padding: 0.75rem 1.5rem; background: transparent;">
+            <i class="fas fa-plus me-1"></i>Agregar Simple
         </a>
     </div>
 </div>
 
 {% if passwords %}
-    <div class="alert alert-success">
-        <strong>🔒 Seguridad Mejorada:</strong> 
+    <div class="alert" style="background: rgba(79, 70, 229, 0.1); border: 1px solid rgba(79, 70, 229, 0.2); border-radius: 12px; color: #4f46e5;">
+        <strong><i class="fas fa-shield-alt me-2"></i>Seguridad Mejorada:</strong> 
         <ul class="mb-0 mt-2">
             <li><strong>Cifrado AES-256-CBC</strong> con derivación PBKDF2</li>
             <li><strong>100,000 iteraciones</strong> para resistir ataques de fuerza bruta</li>
@@ -25,11 +25,11 @@
             <li><strong>Validaciones</strong> contra SQL injection y XSS</li>
         </ul>
     </div>
-    
+
     <div class="row">
         {% for password in passwords %}
             <div class="col-md-6 col-lg-4 mb-3">
-                <div class="card">
+                <div class="card" style="border-radius: 15px; border: 1px solid rgba(79, 70, 229, 0.1); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);">
                     <div class="card-body">
                         <h5 class="card-title">{{ password.website }}</h5>
                         <p class="card-text">
@@ -40,28 +40,28 @@
                             Creado: {{ password.created_at|date:"d/m/Y H:i" }}
                         </small>
                         <div class="mt-2">
-                            <button class="btn btn-sm btn-outline-secondary" onclick="togglePassword({{ password.id }})">
-                                🔓 Ver
+                            <button class="btn btn-sm" onclick="togglePassword({{ password.id }})" style="border: 1px solid #6c757d; border-radius: 8px; color: #6c757d; background: transparent; padding: 0.5rem 1rem;">
+                                <i class="fas fa-eye me-1"></i>Ver
                             </button>
-                            
+
                             <!-- Formulario para eliminación segura con POST -->
-                            <form method="post" action="{% url 'delete_password' password.id %}" 
-                                  style="display: inline;" 
-                                  onsubmit="return confirm('⚠️ ¿Estás seguro de eliminar la contraseña de {{ password.website }}?\n\nEsta acción no se puede deshacer.')">
+                            <form method="post" action="{% url 'delete_password' password.id %}"
+                                  style="display: inline;"
+                                  onsubmit="return confirm(' ¿Estás seguro de eliminar la contraseña de {{ password.website }}?\n\nEsta acción no se puede deshacer.')">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-outline-danger">
-                                    🗑️ Eliminar
+                                <button type="submit" class="btn btn-sm" style="border: 1px solid #dc3545; border-radius: 8px; color: #dc3545; background: transparent; padding: 0.5rem 1rem;">
+                                    <i class="fas fa-trash me-1"></i>Eliminar
                                 </button>
                             </form>
                         </div>
                         <div id="password-{{ password.id }}" class="mt-2" style="display: none;">
                             <div class="alert alert-warning">
-                                <strong>🔓 Contraseña descifrada:</strong> 
+                                <strong> Contraseña descifrada:</strong>
                                 <div class="mt-2">
                                     <code style="font-size: 1.1em; background: #f8f9fa; padding: 5px; border-radius: 3px;">{{ password.decrypted_password }}</code>
                                 </div>
                                 <small class="text-muted d-block mt-2">
-                                    ⚠️ Mantén esta información segura y cierra cuando termines
+                                     Mantén esta información segura y cierra cuando termines
                                 </small>
                             </div>
                         </div>
@@ -70,12 +70,12 @@
             </div>
         {% endfor %}
     </div>
-    
+
     <!-- Estadísticas de seguridad -->
     <div class="mt-4">
-        <div class="card">
+        <div class="card" style="border-radius: 15px; border: 1px solid rgba(79, 70, 229, 0.1); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);">
             <div class="card-body">
-                <h6 class="card-title">📊 Estadísticas de Seguridad</h6>
+                <h6 class="card-title">Estadísticas de Seguridad</h6>
                 <div class="row">
                     <div class="col-md-3">
                         <div class="text-center">
@@ -105,14 +105,21 @@
             </div>
         </div>
     </div>
-    
+
 {% else %}
     <div class="text-center py-5">
-        <h4 class="text-muted">No tienes contraseñas guardadas</h4>
-        <p class="text-muted">Comienza agregando tu primera contraseña con cifrado mejorado</p>
+        <div style="color: #4f46e5; font-size: 4rem; margin-bottom: 1rem;">
+            <i class="fas fa-lock"></i>
+        </div>
+        <h4 style="color: #6c757d;">No tienes contraseñas guardadas</h4>
+        <p style="color: #6c757d;">Comienza agregando tu primera contraseña con cifrado mejorado</p>
         <div>
-            <a href="{% url 'add_password' %}" class="btn btn-primary me-2">🛡️ Agregar Contraseña Segura</a>
-            <a href="{% url 'add_password_simple' %}" class="btn btn-outline-primary">➕ Modo Simple</a>
+            <a href="{% url 'add_password' %}" class="btn me-2" style="background: linear-gradient(135deg, #4f46e5, #06b6d4); border: none; border-radius: 12px; color: white; font-weight: 500; padding: 0.75rem 1.5rem;">
+                <i class="fas fa-plus me-1"></i>Agregar Contraseña Segura
+            </a>
+            <a href="{% url 'add_password_simple' %}" class="btn" style="border: 2px solid #4f46e5; border-radius: 12px; color: #4f46e5; font-weight: 500; padding: 0.75rem 1.5rem; background: transparent;">
+                <i class="fas fa-plus me-1"></i>Modo Simple
+            </a>
         </div>
     </div>
 {% endif %}
@@ -121,28 +128,31 @@
 function togglePassword(passwordId) {
     const element = document.getElementById('password-' + passwordId);
     const button = event.target;
-    
+
     if (element.style.display === 'none') {
         element.style.display = 'block';
-        button.innerHTML = '🔒 Ocultar';
-        button.classList.remove('btn-outline-secondary');
-        button.classList.add('btn-warning');
-        
+        button.innerHTML = '<i class="fas fa-eye-slash me-1"></i>Ocultar';
+        button.style.border = '1px solid #ffc107';
+        button.style.color = '#ffc107';
+        button.style.background = 'rgba(255, 193, 7, 0.1)';
+
         // Auto-ocultar después de 30 segundos por seguridad
         setTimeout(() => {
             if (element.style.display === 'block') {
                 element.style.display = 'none';
-                button.innerHTML = '🔓 Ver';
-                button.classList.remove('btn-warning');
-                button.classList.add('btn-outline-secondary');
+                button.innerHTML = '<i class="fas fa-eye me-1"></i>Ver';
+                button.style.border = '1px solid #6c757d';
+                button.style.color = '#6c757d';
+                button.style.background = 'transparent';
             }
         }, 30000);
-        
+
     } else {
         element.style.display = 'none';
-        button.innerHTML = '🔓 Ver';
-        button.classList.remove('btn-warning');
-        button.classList.add('btn-outline-secondary');
+        button.innerHTML = '<i class="fas fa-eye me-1"></i>Ver';
+        button.style.border = '1px solid #6c757d';
+        button.style.color = '#6c757d';
+        button.style.background = 'transparent';
     }
 }
 
@@ -151,15 +161,16 @@ document.addEventListener('visibilitychange', function() {
     if (document.hidden) {
         const passwordElements = document.querySelectorAll('[id^="password-"]');
         const buttons = document.querySelectorAll('button[onclick^="togglePassword"]');
-        
+
         passwordElements.forEach(element => {
             element.style.display = 'none';
         });
-        
+
         buttons.forEach(button => {
-            button.innerHTML = '🔓 Ver';
-            button.classList.remove('btn-warning');
-            button.classList.add('btn-outline-secondary');
+            button.innerHTML = '<i class="fas fa-eye me-1"></i>Ver';
+            button.style.border = '1px solid #6c757d';
+            button.style.color = '#6c757d';
+            button.style.background = 'transparent';
         });
     }
 });

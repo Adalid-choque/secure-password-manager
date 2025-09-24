@@ -3,6 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.forms import AuthenticationForm
 from .models import PasswordEntry
 from .forms import PasswordEntryForm, SecurePasswordEntryForm
 from .crypto import crypto, SecurePasswordCrypto
@@ -24,20 +26,30 @@ def list_passwords(request):
     Vista para listar todas las contraseñas del usuario actual.
     - Filtra solo las contraseñas del usuario logueado
     - Las ordena por fecha de creación (más recientes primero)
-    - Descifra las contraseñas para mostrarlas con el sistema mejorado
+    - Descifra las contraseñas usando ambos sistemas para compatibilidad
     """
     passwords = PasswordEntry.objects.filter(user=request.user).order_by('-created_at')
     
-    # Usar cifrado mejorado con contexto de usuario
-    secure_crypto = SecurePasswordCrypto(user=request.user)
-    
     # Descifrar contraseñas para mostrar en la vista
     for password in passwords:
-        decrypt_result = secure_crypto.decrypt_password(password.encrypted_password)
-        if decrypt_result['success']:
-            password.decrypted_password = decrypt_result['decrypted_password']
-        else:
-            password.decrypted_password = f"Error: {decrypt_result['error']}"
+        # Intentar primero con el sistema original (para compatibilidad)
+        try:
+            decrypted = crypto.decrypt_password(password.encrypted_password)
+            if not decrypted.startswith("Error"):
+                password.decrypted_password = decrypted
+            else:
+                raise Exception("Sistema original falló")
+        except:
+            # Si falla, intentar con el sistema mejorado
+            try:
+                secure_crypto = SecurePasswordCrypto(user=request.user)
+                decrypt_result = secure_crypto.decrypt_password(password.encrypted_password)
+                if decrypt_result['success']:
+                    password.decrypted_password = decrypt_result['decrypted_password']
+                else:
+                    password.decrypted_password = f"Error: {decrypt_result['error']}"
+            except:
+                password.decrypted_password = "Error: No se pudo descifrar"
     
     return render(request, 'passwords/list.html', {'passwords': passwords})
 
@@ -190,3 +202,24 @@ def check_password_strength(request):
             return JsonResponse({'error': str(e)}, status=400)
     
     return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+def custom_login(request):
+    """
+    Vista personalizada de login que no usa el template base.
+    """
+    if request.user.is_authenticated:
+        return redirect('list_passwords')
+    
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('list_passwords')
+    else:
+        form = AuthenticationForm()
+    
+    return render(request, 'passwords/login.html', {'form': form})

@@ -1,5 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
+from django.contrib.auth.forms import PasswordChangeForm
 from .models import PasswordEntry
 from .validators import SecurityValidators
 from .crypto import PasswordValidator
@@ -159,3 +160,30 @@ class PasswordEntryForm(forms.ModelForm):
             'website': 'Sitio Web',
             'username': 'Usuario',
         }
+
+class CustomPasswordChangeForm(PasswordChangeForm):
+    """Formulario personalizado para cambio de contraseña con validaciones de seguridad."""
+    
+    old_password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+        label='Contraseña Actual'
+    )
+    
+    new_password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+        label='Nueva Contraseña',
+        min_length=8
+    )
+    
+    new_password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+        label='Confirmar Nueva Contraseña'
+    )
+    
+    def clean_new_password1(self):
+        password = self.cleaned_data.get('new_password1')
+        if password:
+            is_valid, errors, score = PasswordValidator.validate_password_strength(password)
+            if not is_valid:
+                raise ValidationError(f"Contraseña débil: {'; '.join(errors)}")
+        return password

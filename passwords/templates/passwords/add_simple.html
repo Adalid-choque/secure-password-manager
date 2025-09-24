@@ -7,11 +7,11 @@
     <div class="col-md-6">
         <div class="card">
             <div class="card-header">
-                <h4 class="mb-0">🔐 Agregar Nueva Contraseña (Modo Simple)</h4>
+                <h4 class="mb-0"> Agregar Nueva Contraseña (Modo Simple)</h4>
             </div>
             <div class="card-body">
                 <div class="alert alert-warning">
-                    <strong>⚠️ Modo Simple:</strong> Sin validaciones avanzadas de seguridad.
+                    <strong> Modo Simple:</strong> Sin validaciones avanzadas de seguridad.
                     <a href="{% url 'add_password' %}" class="alert-link">Usar modo seguro</a>
                 </div>
                 
@@ -41,14 +41,14 @@
                             <div class="text-danger">{{ form.password.errors }}</div>
                         {% endif %}
                         <div class="form-text">
-                            🔐 La contraseña será cifrada automáticamente con AES-256-CBC
+                             La contraseña será cifrada automáticamente con AES-256-CBC
                         </div>
                     </div>
 
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                         <a href="{% url 'list_passwords' %}" class="btn btn-secondary me-md-2">Cancelar</a>
                         <a href="{% url 'add_password' %}" class="btn btn-outline-success me-md-2">Modo Seguro</a>
-                        <button type="submit" class="btn btn-primary">🔒 Guardar Cifrada</button>
+                        <button type="submit" class="btn btn-primary"> Guardar Cifrada</button>
                     </div>
                 </form>
             </div>
